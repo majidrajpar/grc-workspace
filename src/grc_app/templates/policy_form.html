@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% from "_macros.html" import error_summary, csrf_field, checks %}
+{% set refs = policy.framework_refs if policy else [] %}
+{% set statements = policy.statements|join_lines if policy else '' %}
+{% block title %}Policy · GRC workspace{% endblock %}
+{% block content %}
+<h1>{% if policy and policy.id %}Edit policy{% else %}Add policy{% endif %}</h1>
+{{ error_summary(errors) }}
+<form class="record" action="{{ '/policies/' ~ policy.id if policy and policy.id else '/policies/new' }}" method="post">
+  {{ csrf_field(csrf) }}
+  <div class="field">
+    <label for="title">Title (required)</label>
+    <input id="title" name="title" type="text" required value="{{ policy.title if policy else '' }}">
+  </div>
+  <div class="field">
+    <label for="purpose">Purpose (required)</label>
+    <textarea id="purpose" name="purpose" required>{{ policy.purpose if policy else '' }}</textarea>
+  </div>
+  <div class="field">
+    <label for="statements">Statements (required)</label>
+    <span id="statements-hint" class="hint">One rule per line.</span>
+    <textarea id="statements" name="statements" required aria-describedby="statements-hint">{{ statements }}</textarea>
+  </div>
+  <div class="field">
+    <label for="audience">Audience (required)</label>
+    <input id="audience" name="audience" type="text" required value="{{ policy.audience if policy else '' }}">
+  </div>
+  {{ checks('framework_refs', 'Frameworks this policy supports', frameworks, refs) }}
+  <button type="submit">Save policy</button>
+</form>
+{% endblock %}

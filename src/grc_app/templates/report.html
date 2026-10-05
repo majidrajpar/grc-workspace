@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Report · GRC workspace{% endblock %}
+{% block content %}
+<h1>{{ report.organization }}</h1>
+<p class="lede">A readable export of the registers. <a href="/reports.csv">Download CSV</a></p>
+
+<h2>Policies</h2>
+{% for policy in report.policies %}
+<article>
+  <h3>{{ policy.title }}</h3>
+  <p>{{ policy.purpose }}</p>
+  <p class="muted">Audience: {{ policy.audience }}</p>
+  <ul>{% for line in policy.statements %}<li>{{ line }}</li>{% endfor %}</ul>
+</article>
+{% else %}<p>No policies.</p>{% endfor %}
+
+<h2>Risks</h2>
+{% for risk in report.risks %}
+<article>
+  <h3>{{ risk.title }}</h3>
+  <p>{{ risk.asset_name }} · {{ risk.trigger|replace('_', ' ') }} · {{ risk.response }}</p>
+  <p>{{ risk.treatment }}</p>
+  <p>Residual: {{ risk.residual_summary }}</p>
+  <p class="muted">{{ risk.owner_role }} — {{ risk.owner_acceptance }}</p>
+</article>
+{% else %}<p>No risks.</p>{% endfor %}
+
+<h2>Statement of applicability</h2>
+{% for control in report.controls %}
+<article>
+  <h3>{{ control.framework }} {{ control.control_id }} — {{ control.title }}</h3>
+  <p>{% if control.applicable %}Applicable{% else %}Not applicable{% endif %} · {{ control.status|replace('_', ' ') }}</p>
+  {% if control.gap %}<p>{{ control.gap }}</p>{% endif %}
+</article>
+{% endfor %}
+
+<h2>Tasks</h2>
+<ul>
+  {% for task in report.tasks %}
+  <li>{{ task.title }} — {{ task.owner }}{% if task.due_on %}, due {{ task.due_on }}{% endif %}{% if task.done %} (done){% endif %}</li>
+  {% else %}<li>No tasks.</li>{% endfor %}
+</ul>
+
+<h2>Incidents</h2>
+{% for incident in report.incidents %}
+<article>
+  <h3>{{ incident.title }}</h3>
+  <p>{{ incident.summary }}</p>
+  <p>Authority: {{ incident.response_authority }}</p>
+  <p>{{ incident.response_and_recovery }}</p>
+  <p>Lessons: {{ incident.lessons_learned }}</p>
+  {% if incident.may_harm %}
+  <p>Personal data may be harmed. Aware at {{ incident.discovered_at }}.</p>
+  <p>{{ incident.circumstances }}</p>
+  {% endif %}
+</article>
+{% else %}<p>No incidents.</p>{% endfor %}
+
+<h2>Suppliers</h2>
+{% for supplier in report.suppliers %}
+<article>
+  <h3>{{ supplier.name }}</h3>
+  <p>{{ supplier.service }} · {{ supplier.decision|replace('_', ' ') }}</p>
+  <ul>{% for finding in supplier.findings %}<li>{{ finding }}</li>{% endfor %}</ul>
+</article>
+{% else %}<p>No supplier reviews.</p>{% endfor %}
+{% endblock %}

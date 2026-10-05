@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% from "_macros.html" import error_summary, csrf_field, radios %}
+{% block title %}Incident · GRC workspace{% endblock %}
+{% block content %}
+<h1>{% if incident and incident.id %}Edit incident{% else %}Add incident{% endif %}</h1>
+{% if clock %}<p class="clock">{{ clock }}</p>{% endif %}
+{{ error_summary(errors) }}
+<form class="record" action="{{ '/incidents/' ~ incident.id if incident and incident.id else '/incidents/new' }}" method="post">
+  {{ csrf_field(csrf) }}
+  <fieldset class="field">
+    <legend>What happened</legend>
+    <div class="field">
+      <label for="title">Title (required)</label>
+      <input id="title" name="title" type="text" required value="{{ incident.title if incident else '' }}">
+    </div>
+    <div class="field">
+      <label for="summary">Summary (required)</label>
+      <textarea id="summary" name="summary" required>{{ incident.summary if incident else '' }}</textarea>
+    </div>
+  </fieldset>
+  <fieldset class="field">
+    <legend>Response</legend>
+    <div class="field">
+      <label for="response_authority">Who has authority to respond (required)</label>
+      <input id="response_authority" name="response_authority" type="text" required value="{{ incident.response_authority if incident else '' }}">
+    </div>
+    <div class="field">
+      <label for="response_and_recovery">Response and recovery (required)</label>
+      <textarea id="response_and_recovery" name="response_and_recovery" required>{{ incident.response_and_recovery if incident else '' }}</textarea>
+    </div>
+    <div class="field">
+      <label for="lessons_learned">Lessons learned (required)</label>
+      <textarea id="lessons_learned" name="lessons_learned" required>{{ incident.lessons_learned if incident else '' }}</textarea>
+    </div>
+  </fieldset>
+  <fieldset class="field">
+    <legend>Saudi PDPL breach notice</legend>
+    <p class="hint">Use this when the incident may harm personal data or conflict with a data subject's rights. The authority notice is due within 72 hours of awareness. The clock uses this computer's local time.</p>
+    <label class="choice">
+      <input type="checkbox" name="may_harm" value="yes" {% if incident and incident.may_harm %}checked{% endif %}>
+      Personal data may be harmed
+    </label>
+    <div class="field">
+      <label for="discovered_at">Time the team became aware</label>
+      <input id="discovered_at" name="discovered_at" type="datetime-local" value="{{ incident.discovered_at if incident and incident.discovered_at else '' }}">
+    </div>
+    <div class="field">
+      <label for="circumstances">Circumstances</label>
+      <textarea id="circumstances" name="circumstances">{{ incident.circumstances if incident else '' }}</textarea>
+    </div>
+    <div class="field">
+      <label for="data_categories">Data categories</label>
+      <span id="categories-hint" class="hint">One category per line.</span>
+      <textarea id="data_categories" name="data_categories" aria-describedby="categories-hint">{{ incident.data_categories|join_lines if incident else '' }}</textarea>
+    </div>
+    <div class="field">
+      <label for="approximate_record_count">Approximate number of records</label>
+      <input id="approximate_record_count" name="approximate_record_count" type="text" inputmode="numeric" pattern="[0-9]*" value="{{ incident.approximate_record_count if incident and incident.approximate_record_count is not none else '' }}">
+    </div>
+    <div class="field">
+      <label for="risks">Risks to people</label>
+      <textarea id="risks" name="risks">{{ incident.risks if incident else '' }}</textarea>
+    </div>
+    <div class="field">
+      <label for="measures">Measures taken</label>
+      <textarea id="measures" name="measures">{{ incident.measures if incident else '' }}</textarea>
+    </div>
+    {{ radios('data_subjects_notified', 'Were the people told?', [
+      ('yes', 'Yes'),
+      ('no', 'No'),
+      ('unknown', 'Not recorded')
+    ], incident.data_subjects_notified if incident else 'unknown', false) }}
+    <div class="field">
+      <label for="controller_contact">Controller contact</label>
+      <input id="controller_contact" name="controller_contact" type="text" value="{{ incident.controller_contact if incident else '' }}">
+    </div>
+    <div class="field">
+      <label for="dpo_contact">DPO contact</label>
+      <input id="dpo_contact" name="dpo_contact" type="text" value="{{ incident.dpo_contact if incident else '' }}">
+    </div>
+    <div class="field">
+      <label for="advice_to_subjects">Advice to the people affected</label>
+      <textarea id="advice_to_subjects" name="advice_to_subjects">{{ incident.advice_to_subjects if incident else '' }}</textarea>
+    </div>
+  </fieldset>
+  <button type="submit">Save incident</button>
+</form>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% from "_macros.html" import csrf_field %}
+{% block title %}Incidents · GRC workspace{% endblock %}
+{% block content %}
+<h1>Incidents</h1>
+<p class="lede">Who may respond, what was done, the lessons, and a Saudi PDPL breach notice when personal data may be harmed.</p>
+<p><a class="button" href="/incidents/new">Add incident</a></p>
+<div class="sheet-wrap">
+  <table class="sheet">
+    <thead>
+      <tr><th>Incident</th><th>Response authority</th><th>Personal data</th>{% if user.role == 'admin' %}<th>Action</th>{% endif %}</tr>
+    </thead>
+    <tbody>
+      {% for incident in incidents %}
+      <tr>
+        <td><a href="/incidents/{{ incident.id }}">{{ incident.title }}</a></td>
+        <td>{{ incident.response_authority }}</td>
+        <td>{% if incident.may_harm %}May be harmed{% else %}No harm recorded{% endif %}</td>
+        {% if user.role == 'admin' %}
+        <td>
+          <form action="/incidents/{{ incident.id }}/delete" method="post">
+            {{ csrf_field(csrf) }}
+            <button class="quiet danger" type="submit">Delete</button>
+          </form>
+        </td>
+        {% endif %}
+      </tr>
+      {% else %}
+      <tr><td colspan="4">No incidents yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

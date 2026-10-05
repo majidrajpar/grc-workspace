@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% from "_macros.html" import error_summary, csrf_field, radios %}
+{% block title %}Control · GRC workspace{% endblock %}
+{% block content %}
+<h1>{{ control.framework }} {{ control.control_id }}</h1>
+<p>{{ control.title }}</p>
+<p class="lede">{{ control.tracks }}</p>
+{{ error_summary(errors) }}
+<form class="record" action="/controls/{{ control.id }}" method="post">
+  {{ csrf_field(csrf) }}
+  <label class="choice">
+    <input type="checkbox" name="applicable" value="yes" {% if control.applicable %}checked{% endif %}>
+    Applicable
+  </label>
+  {{ radios('status', 'Implementation status', [
+    ('not_started', 'Not started'),
+    ('partial', 'Partial'),
+    ('implemented', 'Implemented')
+  ], control.status) }}
+  <div class="field">
+    <label for="evidence_needed">Evidence still needed</label>
+    <span id="needed-hint" class="hint">One item per line.</span>
+    <textarea id="evidence_needed" name="evidence_needed" aria-describedby="needed-hint">{{ control.evidence_needed|join_lines }}</textarea>
+  </div>
+  <div class="field">
+    <label for="gap">Gap</label>
+    <textarea id="gap" name="gap">{{ control.gap }}</textarea>
+  </div>
+  <button type="submit">Save assessment</button>
+</form>
+<section>
+  <h2>Evidence</h2>
+  {% for item in evidence %}
+  <article>
+    <p>{{ item.note }}</p>
+    {% if item.filename %}<p><a href="/evidence/{{ item.id }}">{{ item.filename }}</a></p>{% endif %}
+    <p class="muted">{{ item.created_at }}</p>
+    {% if user.role == 'admin' %}
+    <form action="/evidence/{{ item.id }}/delete" method="post">
+      {{ csrf_field(csrf) }}
+      <button class="danger" type="submit">Delete evidence</button>
+    </form>
+    {% endif %}
+  </article>
+  {% else %}
+  <p>No evidence yet.</p>
+  {% endfor %}
+  <form class="record" action="/controls/{{ control.id }}/evidence" method="post" enctype="multipart/form-data">
+    {{ csrf_field(csrf) }}
+    <div class="field">
+      <label for="note">Note (required)</label>
+      <span id="note-hint" class="hint">Say what this evidence shows.</span>
+      <textarea id="note" name="note" required aria-describedby="note-hint"></textarea>
+    </div>
+    <div class="field">
+      <label for="file">File</label>
+      <span id="file-hint" class="hint">Optional. 10 MB or smaller.</span>
+      <input id="file" name="file" type="file" aria-describedby="file-hint">
+    </div>
+    <button type="submit">Save evidence</button>
+  </form>
+</section>
+{% endblock %}

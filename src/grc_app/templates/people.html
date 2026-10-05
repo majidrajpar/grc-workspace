@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% from "_macros.html" import error_summary, csrf_field, radios %}
+{% block title %}People · GRC workspace{% endblock %}
+{% block content %}
+<h1>People</h1>
+<p class="lede">Admins manage people. Members keep the registers.</p>
+{{ error_summary(errors) }}
+<div class="sheet-wrap">
+  <table class="sheet">
+    <thead>
+      <tr><th>Name</th><th>Email</th><th>Role</th></tr>
+    </thead>
+    <tbody>
+      {% for person in people %}
+      <tr>
+        <td>{{ person.name }}</td>
+        <td>{{ person.email }}</td>
+        <td>{{ person.role }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<form class="record" action="/people" method="post">
+  {{ csrf_field(csrf) }}
+  <div class="field">
+    <label for="name">Name</label>
+    <input id="name" name="name" type="text" autocomplete="name" required>
+  </div>
+  <div class="field">
+    <label for="email">Email</label>
+    <input id="email" name="email" type="email" autocomplete="email" required>
+  </div>
+  <div class="field">
+    <label for="password">Password</label>
+    <span id="password-hint" class="hint">At least 8 characters.</span>
+    <input id="password" name="password" type="password" autocomplete="new-password" minlength="8" required aria-describedby="password-hint">
+  </div>
+  {{ radios('role', 'Role', [('admin', 'Admin'), ('member', 'Member')], 'member') }}
+  <button type="submit">Add person</button>
+</form>
+{% endblock %}

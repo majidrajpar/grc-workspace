@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% from "_macros.html" import csrf_field %}
+{% block title %}Home · GRC workspace{% endblock %}
+{% block content %}
+<header class="page-head">
+  <div>
+    <p class="eyebrow">Workspace</p>
+    <h1>{{ organization }}</h1>
+    <p class="lede">What needs a decision, then the registers behind it.</p>
+  </div>
+</header>
+
+<section aria-labelledby="registers-heading">
+  <h2 id="registers-heading">Registers</h2>
+  <div class="sheet-wrap">
+    <table class="sheet registers">
+      <thead>
+        <tr>
+          <th><a href="/policies">Policies</a></th>
+          <th><a href="/assets">Assets</a></th>
+          <th><a href="/risks">Risks</a></th>
+          <th><a href="/controls">Controls</a></th>
+          <th><a href="/controls">Evidence</a></th>
+          <th><a href="/tasks">Open tasks</a></th>
+          <th><a href="/incidents">Incidents</a></th>
+          <th><a href="/suppliers">Suppliers</a></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><a href="/policies">{{ counts.policies }}</a></td>
+          <td><a href="/assets">{{ counts.assets }}</a></td>
+          <td><a href="/risks">{{ counts.risks }}</a></td>
+          <td><a href="/controls">{{ counts.applicable_controls }}</a></td>
+          <td><a href="/controls">{{ counts.evidence }}</a></td>
+          <td><a href="/tasks">{{ counts.open_tasks }}</a></td>
+          <td><a href="/incidents">{{ counts.incidents }}</a></td>
+          <td><a href="/suppliers">{{ counts.suppliers }}</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section aria-labelledby="attention-heading">
+  <h2 id="attention-heading">Needs attention</h2>
+  <div class="attention-grid">
+    <article class="queue warn">
+      <h3>Overdue tasks</h3>
+      {% if attention.overdue %}
+      <ul>
+        {% for task in attention.overdue %}
+        <li><a href="/tasks/{{ task.id }}">{{ task.title }}</a><span>{{ task.owner }} · {{ task.due_on }}</span></li>
+        {% endfor %}
+      </ul>
+      {% else %}<p class="quiet-note">None</p>{% endif %}
+    </article>
+    <article class="queue warn">
+      <h3>Notice window</h3>
+      {% if attention.breaches %}
+      <ul>
+        {% for incident in attention.breaches %}
+        <li><a href="/incidents/{{ incident.id }}">{{ incident.title }}</a><span>{{ incident.clock }}</span></li>
+        {% endfor %}
+      </ul>
+      {% else %}<p class="quiet-note">None</p>{% endif %}
+    </article>
+    <article class="queue">
+      <h3>Risks not accepted</h3>
+      {% if attention.risks %}
+      <ul>
+        {% for risk in attention.risks %}
+        <li><a href="/risks/{{ risk.id }}">{{ risk.title }}</a><span>{{ risk.owner_role }}</span></li>
+        {% endfor %}
+      </ul>
+      {% else %}<p class="quiet-note">None</p>{% endif %}
+    </article>
+    <article class="queue">
+      <h3>Controls still open</h3>
+      {% if attention.controls %}
+      <ul>
+        {% for control in attention.controls %}
+        <li><a href="/controls/{{ control.id }}">{{ control.title }}</a><span>{{ control.framework }} {{ control.control_id }} · {{ control.status }}</span></li>
+        {% endfor %}
+      </ul>
+      {% else %}<p class="quiet-note">None</p>{% endif %}
+    </article>
+  </div>
+</section>
+
+<section>
+  <h2>Open tasks</h2>
+  <div class="sheet-wrap">
+    <table class="sheet">
+      <thead>
+        <tr><th>Task</th><th>Owner</th><th>Due</th></tr>
+      </thead>
+      <tbody>
+        {% for task in attention.open_tasks %}
+        <tr>
+          <td><a href="/tasks/{{ task.id }}">{{ task.title }}</a></td>
+          <td>{{ task.owner }}</td>
+          <td>{{ task.due_on or "—" }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="3">No open tasks.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+{% if user.role == 'admin' %}
+<form class="record" action="/organization" method="post">
+  {{ csrf_field(csrf) }}
+  <h2>Organization</h2>
+  <div class="field">
+    <label for="name">Organization name</label>
+    <input id="name" name="name" type="text" value="{{ organization }}" required autocomplete="organization">
+  </div>
+  <button type="submit">Save organization name</button>
+</form>
+{% endif %}
+{% endblock %}

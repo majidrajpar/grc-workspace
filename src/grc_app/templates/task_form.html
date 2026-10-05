@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% from "_macros.html" import error_summary, csrf_field %}
+{% block title %}Task · GRC workspace{% endblock %}
+{% block content %}
+<h1>{% if task and task.id %}Edit task{% else %}Add task{% endif %}</h1>
+{{ error_summary(errors) }}
+<form class="record" action="{{ '/tasks/' ~ task.id if task and task.id else '/tasks/new' }}" method="post">
+  {{ csrf_field(csrf) }}
+  <div class="field">
+    <label for="title">Title (required)</label>
+    <input id="title" name="title" type="text" required value="{{ task.title if task else '' }}">
+  </div>
+  <div class="field">
+    <label for="owner">Owner (required)</label>
+    <input id="owner" name="owner" type="text" required value="{{ task.owner if task else '' }}">
+  </div>
+  <div class="field">
+    <label for="due_on">Due date</label>
+    <input id="due_on" name="due_on" type="date" value="{{ task.due_on if task and task.due_on else '' }}">
+  </div>
+  <div class="field">
+    <label for="closes_gap">Gap this closes (required)</label>
+    <textarea id="closes_gap" name="closes_gap" required>{{ task.closes_gap if task else '' }}</textarea>
+  </div>
+  <label class="choice">
+    <input type="checkbox" name="done" value="yes" {% if task and task.done %}checked{% endif %}>
+    Done
+  </label>
+  <button type="submit">Save task</button>
+</form>
+{% endblock %}

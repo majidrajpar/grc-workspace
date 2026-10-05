@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% from "_macros.html" import error_summary, csrf_field %}
+{% block title %}Password · GRC workspace{% endblock %}
+{% block content %}
+<h1>Change password</h1>
+<p class="lede">Signed in as {{ user.email }} ({{ user.role }}).</p>
+{{ error_summary(errors) }}
+<form class="record" action="/account" method="post">
+  {{ csrf_field(csrf) }}
+  <div class="field">
+    <label for="password">New password</label>
+    <span id="password-hint" class="hint">At least 8 characters. Paste is allowed.</span>
+    <input id="password" name="password" type="password" autocomplete="new-password" minlength="8" required aria-describedby="password-hint">
+    <button type="button" class="quiet" data-password-toggle="password">Show password</button>
+  </div>
+  <button type="submit">Change password</button>
+</form>
+{% endblock %}

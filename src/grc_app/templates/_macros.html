@@ -1,0 +1,38 @@
+{% macro error_summary(items) %}
+{% if items %}
+<div class="errors" role="alert" tabindex="-1" autofocus>
+  <p>Fix the following before saving.</p>
+  <ul>
+    {% for item in items %}<li>{{ item }}</li>{% endfor %}
+  </ul>
+</div>
+{% endif %}
+{% endmacro %}
+
+{% macro csrf_field(token) %}
+<input type="hidden" name="csrf_token" value="{{ token }}">
+{% endmacro %}
+
+{% macro radios(name, legend, options, selected, required=true) %}
+<fieldset class="field">
+  <legend>{{ legend }}{% if required %} (required){% endif %}</legend>
+  {% for value, label in options %}
+  <label class="choice">
+    <input type="radio" name="{{ name }}" value="{{ value }}" {% if selected == value %}checked{% endif %} {% if required %}required{% endif %}>
+    {{ label }}
+  </label>
+  {% endfor %}
+</fieldset>
+{% endmacro %}
+
+{% macro checks(name, legend, options, selected) %}
+<fieldset class="field">
+  <legend>{{ legend }}</legend>
+  {% for value, label in options %}
+  <label class="choice">
+    <input type="checkbox" name="{{ name }}" value="{{ value }}" {% if value in selected %}checked{% endif %}>
+    {{ label }}
+  </label>
+  {% endfor %}
+</fieldset>
+{% endmacro %}

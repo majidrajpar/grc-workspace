@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Controls · GRC workspace{% endblock %}
+{% block content %}
+<h1>Controls</h1>
+<p class="lede">Statement of applicability for the Saudi-first packs. These titles are workspace labels, not official control text.</p>
+<div class="sheet-wrap">
+  <table class="sheet">
+    <thead>
+      <tr><th>Control</th><th>Title</th><th>Applicability</th><th>Status</th><th>Evidence</th><th>Gap</th></tr>
+    </thead>
+    <tbody>
+      {% for control in controls %}
+      <tr>
+        <td><a href="/controls/{{ control.id }}">{{ labels[control.framework] }} {{ control.control_id }}</a></td>
+        <td>{{ control.title }}</td>
+        <td>{% if control.applicable %}Applicable{% else %}Not applicable{% endif %}</td>
+        <td>{{ control.status|replace('_', ' ') }}</td>
+        <td>{{ control.evidence_count }}</td>
+        <td>{{ control.gap or "—" }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

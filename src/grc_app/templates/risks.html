@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% from "_macros.html" import csrf_field %}
+{% block title %}Risks · GRC workspace{% endblock %}
+{% block content %}
+<h1>Risks</h1>
+<p class="lede">Identification, response, treatment, residual risk, appetite, and owner acceptance.</p>
+<p><a class="button" href="/risks/new">Add risk</a></p>
+<div class="sheet-wrap">
+  <table class="sheet">
+    <thead>
+      <tr>
+        <th>Risk</th><th>Context</th><th>Trigger</th><th>Response</th><th>Acceptance</th>
+        {% if user.role == 'admin' %}<th>Action</th>{% endif %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for risk in risks %}
+      <tr>
+        <td><a href="/risks/{{ risk.id }}">{{ risk.title }}</a></td>
+        <td>{{ risk.asset_name }}</td>
+        <td>{{ risk.trigger|replace('_', ' ') }}</td>
+        <td>{{ risk.response }}</td>
+        <td>{% if risk.accepted %}Accepted{% else %}Not accepted{% endif %}</td>
+        {% if user.role == 'admin' %}
+        <td>
+          <form action="/risks/{{ risk.id }}/delete" method="post">
+            {{ csrf_field(csrf) }}
+            <button class="quiet danger" type="submit">Delete</button>
+          </form>
+        </td>
+        {% endif %}
+      </tr>
+      {% else %}
+      <tr><td colspan="6">No risks yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

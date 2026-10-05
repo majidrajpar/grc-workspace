@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% from "_macros.html" import csrf_field %}
+{% block title %}Tasks · GRC workspace{% endblock %}
+{% block content %}
+<h1>Tasks</h1>
+<p class="lede">A gap assigned to a person, with a due date.</p>
+<p><a class="button" href="/tasks/new">Add task</a></p>
+<div class="sheet-wrap">
+  <table class="sheet">
+    <thead>
+      <tr>
+        <th>Task</th><th>Owner</th><th>Due</th><th>Status</th><th>Closes</th>
+        {% if user.role == 'admin' %}<th>Action</th>{% endif %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for task in tasks %}
+      <tr>
+        <td><a href="/tasks/{{ task.id }}">{{ task.title }}</a></td>
+        <td>{{ task.owner }}</td>
+        <td>{{ task.due_on or "—" }}</td>
+        <td>{% if task.done %}Done{% else %}Open{% endif %}</td>
+        <td>{{ task.closes_gap }}</td>
+        {% if user.role == 'admin' %}
+        <td>
+          <form action="/tasks/{{ task.id }}/delete" method="post">
+            {{ csrf_field(csrf) }}
+            <button class="quiet danger" type="submit">Delete</button>
+          </form>
+        </td>
+        {% endif %}
+      </tr>
+      {% else %}
+      <tr><td colspan="6">No tasks yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

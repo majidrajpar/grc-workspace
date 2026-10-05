@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% from "_macros.html" import error_summary, csrf_field %}
+{% block title %}Sign in · GRC workspace{% endblock %}
+{% block content %}
+<h1>Sign in</h1>
+<p class="lede">One organization. Records stay on this computer.</p>
+{{ error_summary(errors) }}
+<form class="record" action="/login" method="post">
+  {{ csrf_field(csrf) }}
+  <div class="field">
+    <label for="email">Email</label>
+    <span id="email-hint" class="hint">Format: you@example.com</span>
+    <input id="email" name="email" type="email" autocomplete="username" required aria-describedby="email-hint">
+  </div>
+  <div class="field">
+    <label for="password">Password</label>
+    <input id="password" name="password" type="password" autocomplete="current-password" required>
+    <button type="button" class="quiet" data-password-toggle="password">Show password</button>
+  </div>
+  <button type="submit">Sign in</button>
+</form>
+<p><a href="/about">About Majid Mumtaz</a></p>
+<section class="card">
+  <h2>Local demo accounts</h2>
+  <p>Change these passwords after you sign in. They exist only in a new workspace.</p>
+  <ul>
+    <li>Admin: admin@localhost / admin-change-me</li>
+    <li>Member: member@localhost / member-change-me</li>
+  </ul>
+</section>
+{% endblock %}

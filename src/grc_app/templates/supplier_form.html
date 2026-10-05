@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% from "_macros.html" import error_summary, csrf_field, radios, checks %}
+{% set basis = supplier.questionnaire_basis if supplier else [] %}
+{% block title %}Supplier · GRC workspace{% endblock %}
+{% block content %}
+<h1>{% if supplier and supplier.id %}Edit supplier review{% else %}Add supplier review{% endif %}</h1>
+{{ error_summary(errors) }}
+<form class="record" action="{{ '/suppliers/' ~ supplier.id if supplier and supplier.id else '/suppliers/new' }}" method="post">
+  {{ csrf_field(csrf) }}
+  <div class="field">
+    <label for="name">Supplier (required)</label>
+    <input id="name" name="name" type="text" required value="{{ supplier.name if supplier else '' }}">
+  </div>
+  <div class="field">
+    <label for="service">Service (required)</label>
+    <input id="service" name="service" type="text" required value="{{ supplier.service if supplier else '' }}">
+  </div>
+  <label class="choice">
+    <input type="checkbox" name="reviewed_before_contract" value="yes" {% if not supplier or supplier.reviewed_before_contract %}checked{% endif %} required>
+    This review is happening before the contract
+  </label>
+  {{ checks('questionnaire_basis', 'Questionnaire basis (required)', frameworks, basis) }}
+  <div class="field">
+    <label for="findings">Findings (required)</label>
+    <span id="findings-hint" class="hint">One finding per line.</span>
+    <textarea id="findings" name="findings" required aria-describedby="findings-hint">{{ supplier.findings|join_lines if supplier else '' }}</textarea>
+  </div>
+  {{ radios('decision', 'Decision', [
+    ('proceed', 'Proceed'),
+    ('proceed_with_conditions', 'Proceed with conditions'),
+    ('stop', 'Stop')
+  ], supplier.decision if supplier else '') }}
+  <button type="submit">Save supplier review</button>
+</form>
+{% endblock %}

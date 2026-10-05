@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}About · GRC workspace{% endblock %}
+{% block content %}
+<header class="page-head">
+  <p class="eyebrow">About</p>
+  <h1>Majid Mumtaz</h1>
+  <p class="lede">Director of Internal Audit and Risk Advisory.</p>
+</header>
+<p>Majid builds open-source tools for internal audit, governance, risk, and forensic analysis. This workspace is one of those tools.</p>
+<p>CIA, ACA, FCCA, ACCA, GRCP, GRCA, and COSO ERM Certified. Author of The Audit Signal on LinkedIn, and of the AuditBitz channel.</p>
+<div class="sheet-wrap">
+  <table class="sheet">
+    <thead>
+      <tr><th>Place</th><th>Link</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>GitHub</td>
+        <td><a href="https://github.com/majidrajpar">majidrajpar</a></td>
+      </tr>
+      <tr>
+        <td>LinkedIn</td>
+        <td><a href="https://www.linkedin.com/in/majid-m-4b097118/">majid-m-4b097118</a></td>
+      </tr>
+      <tr>
+        <td>Portfolio</td>
+        <td><a href="https://majidrajpar.github.io/portfolio_my/">majidrajpar.github.io/portfolio_my</a></td>
+      </tr>
+      <tr>
+        <td>YouTube</td>
+        <td><a href="https://www.youtube.com/@AuditBitz">@AuditBitz</a></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+{% if not user %}
+<p><a href="/login">Sign in</a></p>
+{% endif %}
+{% endblock %}

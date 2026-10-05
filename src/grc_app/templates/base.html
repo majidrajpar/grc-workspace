@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}GRC workspace{% endblock %}</title>
+  <link rel="stylesheet" href="/static/app.css?v=5">
+</head>
+<body>
+  <a class="skip" href="#content">Skip to content</a>
+  <div class="shell">
+    {% if user %}
+    {% from "_macros.html" import csrf_field %}
+    <nav class="nav" aria-label="Workspace">
+      <a class="brand" href="/">GRC workspace</a>
+      <div class="nav-groups">
+        {% for label, links in [
+          ('Workspace', [('/', 'Home')]),
+          ('Governance', [('/policies', 'Policies')]),
+          ('Risk', [('/assets', 'Assets'), ('/risks', 'Risks')]),
+          ('Compliance', [('/controls', 'Controls')]),
+          ('Work', [('/tasks', 'Tasks'), ('/incidents', 'Incidents'), ('/suppliers', 'Suppliers')]),
+          ('Report', [('/reports', 'Report')])
+        ] %}
+        <div class="nav-group">
+          <p class="nav-label">{{ label }}</p>
+          <ul>
+            {% for href, item in links %}
+            <li><a href="{{ href }}" {% if request.url.path == href or (href != '/' and request.url.path.startswith(href)) %}aria-current="page"{% endif %}>{{ item }}</a></li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endfor %}
+        <div class="nav-group">
+          <p class="nav-label">Account</p>
+          <ul>
+            {% if user.role == 'admin' %}
+            <li><a href="/people" {% if request.url.path == '/people' %}aria-current="page"{% endif %}>People</a></li>
+            {% endif %}
+            <li><a href="/about" {% if request.url.path == '/about' %}aria-current="page"{% endif %}>About</a></li>
+            <li><a href="/account" {% if request.url.path == '/account' %}aria-current="page"{% endif %}>Password</a></li>
+          </ul>
+          <form action="/logout" method="post">{{ csrf_field(csrf) }}<button class="quiet" type="submit">Sign out</button></form>
+        </div>
+      </div>
+    </nav>
+    {% endif %}
+    <main id="content">
+      {% if flash %}<p class="status" role="status">{{ flash }}</p>{% endif %}
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+  <script src="/static/app.js?v=5"></script>
+</body>
+</html>

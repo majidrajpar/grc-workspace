@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% from "_macros.html" import error_summary, csrf_field, radios %}
+{% block title %}Asset · GRC workspace{% endblock %}
+{% block content %}
+<h1>{% if asset and asset.id %}Edit asset{% else %}Add asset{% endif %}</h1>
+{{ error_summary(errors) }}
+<form class="record" action="{{ '/assets/' ~ asset.id if asset and asset.id else '/assets/new' }}" method="post">
+  {{ csrf_field(csrf) }}
+  <div class="field">
+    <label for="name">Name (required)</label>
+    <input id="name" name="name" type="text" required value="{{ asset.name if asset else '' }}">
+  </div>
+  {{ radios('kind', 'Kind', kinds, asset.kind if asset else 'asset') }}
+  <div class="field">
+    <label for="description">Description</label>
+    <textarea id="description" name="description">{{ asset.description if asset else '' }}</textarea>
+  </div>
+  <button type="submit">Save asset</button>
+</form>
+{% endblock %}

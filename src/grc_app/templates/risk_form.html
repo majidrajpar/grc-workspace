@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% from "_macros.html" import error_summary, csrf_field, radios %}
+{% block title %}Risk · GRC workspace{% endblock %}
+{% block content %}
+<h1>{% if risk and risk.id %}Edit risk{% else %}Add risk{% endif %}</h1>
+{{ error_summary(errors) }}
+{% if not assets %}
+<p>Add an asset first. A risk needs something it is about.</p>
+<p><a class="button" href="/assets/new">Add asset</a></p>
+{% else %}
+<form class="record" action="{{ '/risks/' ~ risk.id if risk and risk.id else '/risks/new' }}" method="post">
+  {{ csrf_field(csrf) }}
+  <div class="field">
+    <label for="title">Title (required)</label>
+    <input id="title" name="title" type="text" required value="{{ risk.title if risk else '' }}">
+  </div>
+  <div class="field">
+    <label for="asset_id">Context (required)</label>
+    <span id="asset-hint" class="hint">Asset, third party, business unit, or process.</span>
+    <select id="asset_id" name="asset_id" required aria-describedby="asset-hint">
+      <option value="">Choose</option>
+      {% for asset in assets %}
+      <option value="{{ asset.id }}" {% if risk and risk.asset_id == asset.id %}selected{% endif %}>{{ asset.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="field">
+    <label for="threat">Threat (required)</label>
+    <textarea id="threat" name="threat" required>{{ risk.threat if risk else '' }}</textarea>
+  </div>
+  {{ radios('trigger', 'Trigger', [
+    ('project', 'Project'),
+    ('change', 'Critical change'),
+    ('outsourcing', 'Outsourcing'),
+    ('new_product', 'New product'),
+    ('periodic', 'Periodic review')
+  ], risk.trigger if risk else '') }}
+  {{ radios('response', 'Response', [
+    ('accept', 'Accept'),
+    ('mitigate', 'Mitigate'),
+    ('transfer', 'Transfer'),
+    ('avoid', 'Avoid')
+  ], risk.response if risk else '') }}
+  <div class="field">
+    <label for="treatment">Treatment (required)</label>
+    <textarea id="treatment" name="treatment" required>{{ risk.treatment if risk else '' }}</textarea>
+  </div>
+  <div class="field">
+    <label for="residual_summary">Residual risk (required)</label>
+    <textarea id="residual_summary" name="residual_summary" required>{{ risk.residual_summary if risk else '' }}</textarea>
+  </div>
+  <div class="field">
+    <label for="appetite_note">Appetite (required)</label>
+    <textarea id="appetite_note" name="appetite_note" required>{{ risk.appetite_note if risk else '' }}</textarea>
+  </div>
+  <div class="field">
+    <label for="owner_role">Owner role (required)</label>
+    <input id="owner_role" name="owner_role" type="text" required value="{{ risk.owner_role if risk else '' }}">
+  </div>
+  <div class="field">
+    <label for="owner_acceptance">What the owner is asked to accept (required)</label>
+    <textarea id="owner_acceptance" name="owner_acceptance" required>{{ risk.owner_acceptance if risk else '' }}</textarea>
+  </div>
+  <label class="choice">
+    <input type="checkbox" name="accepted" value="yes" {% if risk and risk.accepted %}checked{% endif %}>
+    The business owner accepts the residual risk
+  </label>
+  <button type="submit">Save risk</button>
+</form>
+{% endif %}
+{% endblock %}
