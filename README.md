@@ -2,7 +2,7 @@
 
 ![Home](assets/home.png)
 
-A barebones governance, risk, and compliance register for one organization, aimed at a GCC SME. It is a local system of record: a person writes the registers, and the app keeps them in one place.
+A lite governance, risk, and compliance register for one organization, aimed at a GCC SME. It is a local system of record: a person writes the registers, and the app keeps them in one place.
 
 The loaded framework packs are NCA ECC, SAMA CSF, and Saudi PDPL. Control titles in the app are workspace labels, not official control text. The app does not file notices and it does not give legal advice.
 
