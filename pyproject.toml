@@ -1,7 +1,7 @@
 [project]
 name = "grc-workspace"
 version = "0.1.0"
-description = "Lite GCC GRC workspace"
+description = "GRC workspace lite"
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.12"
